@@ -1,0 +1,40 @@
+[cursor]
+blink_interval = 500
+unfocused_hollow = true
+
+[cursor.style]
+blinking = "On"
+shape = "Beam"
+
+[font]
+normal = { family = "Monospace", style = "Regular" }
+bold = { family = "Monospace", style = "Bold" }
+italic = { family = "Monospace", style = "Italic" }
+bold_italic = { family = "Monospace", style = "Bold Italic" }
+offset = { x = 0, y = 0 }
+glyph_offset = { x = 0, y = 0 }
+
+size = 11
+[scrolling]
+history = 10000
+multiplier = 3
+
+[window]
+decorations = "full"
+opacity = 0.95
+startup_mode = "Windowed"
+dimensions = { columns = 80, lines = 24 }
+[window.padding]
+x = 4
+y = 4
+
+[general]
+live_config_reload = true
+import = ["/home/sofi/.config/alacritty/themes/dracula.toml"]
+
+[terminal.shell]
+program = "/bin/zsh"
+args = ["--login"]  # Ensures Zsh loads startup files (.zshrc, etc.)
+
+
+[terminal]
