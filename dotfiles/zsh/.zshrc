@@ -1,5 +1,5 @@
 # ~/.zshrc - minimal setup
-
+export SUDO_EDITOR=nvim
 # Prompt using starship (if installed)
 eval "$(starship init zsh)"
 
