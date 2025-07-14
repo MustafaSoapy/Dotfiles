@@ -1,7 +1,5 @@
 # ~/.zshrc - minimal setup
 export SUDO_EDITOR=nvim
-# Prompt using starship (if installed)
-eval "$(starship init zsh)"
 
 # History
 HISTSIZE=10000
@@ -19,4 +17,8 @@ autoload -Uz compinit && compinit
 
 # Optional: syntax highlighting
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+
+
+# Prompt using starship (if installed)
+eval "$(starship init zsh)"
 
