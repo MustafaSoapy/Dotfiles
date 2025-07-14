@@ -22,3 +22,7 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # Prompt using starship (if installed)
 eval "$(starship init zsh)"
 
+
+setopt autocd       # just type folder name to cd
+setopt correct      # autocorrect small typos
+setopt no_beep      # disable terminal beep
