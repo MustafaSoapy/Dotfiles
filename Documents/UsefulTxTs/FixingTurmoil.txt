@@ -1,0 +1,57 @@
+**Fixing libGL.so.1, libcrypto, and libGLU.so.1 Issues to Run Turmoil on Arch Linux**
+====================================================================================
+
+First Of Alllll : Make sure to add `LD_LIBRARY_PATH=/usr/lib32` to your 
+`run.sh` file to set the library path correctly.
+
+**Introduction**
+---------------
+
+This tutorial provides step-by-step instructions on how to fix the `libGL.so.1`, `libcrypto`, and `libGLU.so.1` issues that may prevent Turmoil from running on Arch Linux.
+
+**Fixing libGL.so.1 Issue**
+-------------------------
+
+To fix the `libGL.so.1` issue, follow these steps:
+
+* Open a terminal and install the `lib32-mesa` package using the following command: 
+```
+sudo pacman -S lib32-mesa
+```
+* This will install the 32-bit Mesa library, which is required to resolve the `libGL.so.1` issue.
+
+**Fixing libcrypto Issue**
+-------------------------
+
+To fix the `libcrypto` issue, follow these steps:
+
+* Install the `lib32-openssl-1.0` package from the Arch User Repository (AUR).
+* Add the following line to your `run.sh` file: 
+```
+LD_LIBRARY_PATH=/usr/lib32
+```
+* This will set the library path to `/usr/lib32`, allowing your system to find the required 32-bit OpenSSL library.
+
+**Fixing libGLU.so.1 Issue**
+-------------------------
+
+To fix the `libGLU.so.1` issue, follow these steps:
+
+* Open a terminal and install the `lib32-glu` package using the following command: 
+```
+sudo pacman -S lib32-glu
+```
+* This will install the 32-bit OpenGL Utility Library, which includes the `libGLU.so.1` file that's required by Turmoil.
+
+**Conclusion**
+--------------
+
+By following these steps, you should be able to fix the `libGL.so.1`, `libcrypto`, and `libGLU.so.1` issues and run Turmoil successfully on Arch Linux. If you encounter any further issues, feel free to seek additional help.
+
+**Summary of Required Packages**
+
+* `lib32-mesa`
+* `lib32-openssl-1.0` (from AUR)
+* `lib32-glu`
+
+
