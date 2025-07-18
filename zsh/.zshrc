@@ -1,4 +1,4 @@
-# ~/.zshrc - minimal setup
+#Commands to do at the start of any terminal 
 export SUDO_EDITOR=nvim
 
 # History
