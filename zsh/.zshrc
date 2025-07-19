@@ -1,9 +1,13 @@
 #Commands to do at the start of any terminal 
 export SUDO_EDITOR=nvim
 
-# Word-jumping with Ctrl + Arrow keys
-bindkey "^[[1;5C" forward-word
+# Use Bash-like word movement
+autoload -U select-word-style
+select-word-style bash
+
+# Ctrl+Left / Ctrl+Right word jump
 bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
 
 
 # History
