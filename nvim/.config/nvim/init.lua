@@ -13,9 +13,6 @@ vim.opt.rtp:prepend(lazypath)
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
--- Use system clipboard as default
-vim.opt.clipboard = "unnamedplus"
-
 -- ~/.config/nvim/init.lua
 
 vim.g.mapleader = " "
@@ -63,9 +60,22 @@ keymap("n", "<leader>c", ":nohlsearch<CR>", opts)
 -- Exit insert mode with jk
 keymap("i", "jk", "<Esc>", opts)
 
--- Black hole delete (doesn't yank into register)
-keymap("n", "<leader>d", '"_dd', opts)
-keymap("v", "<leader>d", '"_d', opts)
+-- Make 'p' and 'P' paste from system clipboard
+vim.keymap.set('n', 'p', '"+p', { noremap = true, desc = 'Paste from system clipboard' })
+vim.keymap.set('n', 'P', '"+P', { noremap = true })
 
+-- Make <leader>p and <leader>P paste from normal register
+vim.keymap.set('n', '<leader>p', '"0p', { noremap = true, desc = 'Paste from unnamed register' })
+vim.keymap.set('n', '<leader>P', '"0P', { noremap = true })
 
+-- 'd' goes to black hole (won’t yank)
+vim.keymap.set({ 'n', 'v' }, 'd', '"_d', { noremap = true, desc = 'Delete without yanking' })
+vim.keymap.set({ 'n', 'v' }, 'D', '"_D', { noremap = true })
+
+-- <leader>d does a normal delete (yanks to "0)
+vim.keymap.set({ 'n', 'v' }, '<leader>d', 'd', { noremap = true, desc = 'Normal delete' })
+vim.keymap.set({ 'n', 'v' }, '<leader>D', 'D', { noremap = true })
+
+-- Use system clipboard as default
+vim.opt.clipboard = "unnamedplus"
 

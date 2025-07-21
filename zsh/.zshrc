@@ -35,3 +35,9 @@ eval "$(starship init zsh)"
 setopt autocd       # just type folder name to cd
 setopt correct      # autocorrect small typos
 setopt no_beep      # disable terminal beep
+
+# play (song name) searches and plys in mpv gui (needs mpv and yt-dlp)
+play() {
+  yt-dlp --default-search "ytsearch" -f ba -g "$1" | xargs mpv --player-operation-mode=pseudo-gui
+}
+
