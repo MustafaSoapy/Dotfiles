@@ -1,6 +1,6 @@
 #Commands to do at the start of any terminal 
 export SUDO_EDITOR=nvim
-
+export PATH="$HOME/Scripts:$PATH"
 # Use Bash-like word movement
 autoload -U select-word-style
 select-word-style bash
@@ -36,8 +36,4 @@ setopt autocd       # just type folder name to cd
 setopt correct      # autocorrect small typos
 setopt no_beep      # disable terminal beep
 
-# play (song name) searches and plys in mpv gui (needs mpv and yt-dlp)
-play() {
-  yt-dlp --default-search "ytsearch" -f ba -g "$1" | xargs mpv --player-operation-mode=pseudo-gui
-}
 
