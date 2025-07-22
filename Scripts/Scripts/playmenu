@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# 1. Choose mode
+mode=$(printf "Play\nDownload" | fzf --prompt="Mode: " --height=10 --border)
+[ -z "$mode" ] && echo "Cancelled." && exit
+
+# 2. Ask what to search
+read -rp "Search YouTube: " query
+[ -z "$query" ] && echo "No input." && exit
+
+# 3. Get search results into a variable first to avoid broken pipe
+results=$(yt-dlp "ytsearch10:$query" --flat-playlist --print "%(title)s | https://www.youtube.com/watch?v=%(id)s")
+
+[ -z "$results" ] && echo "No results found." && exit
+
+# 4. Pass results to fzf
+selection=$(printf "%s\n" "$results" | fzf --prompt="Pick a video: " --height=20)
+[ -z "$selection" ] && echo "Nothing selected." && exit
+
+# 5. Extract URL
+url=$(echo "$selection" | sed -E 's/.* \| //')
+
+# Copy URL to clipboard
+if command -v xclip &>/dev/null; then
+  echo "$url" | xclip -selection clipboard
+  notify-send "YouTube URL copied to clipboard" "$url"
+fi
+
+# 6. Do the thing
+# Play BLOCK
+if [ "$mode" = "Play" ]; then
+  # Get direct stream URL
+  stream_url=$(yt-dlp -f "bestaudio[ext=m4a]/bestaudio" -g "$url")
+  [ -z "$stream_url" ] && echo "Failed to get stream URL." && exit
+
+  # Get video title
+  title=$(yt-dlp --get-title "$url")
+
+  # Always loop since it's a single track
+  loop_opt="--loop=inf"
+
+  # Launch MPV with GUI, title, and loop ON by default
+  nohup mpv --ytdl=no --force-window=immediate --cache-secs=1 --demuxer-max-back-bytes=500000 --title="$title" $loop_opt "$stream_url" > /dev/null 2>&1 &
+
+  # Download Block 
+elif [ "$mode" = "Download" ]; then
+  read -rp "Save to folder (default: ~/Music/yt-dl): " folder
+  folder="${folder:-$HOME/Music/yt-dl}"
+  mkdir -p "$folder"
+
+  yt-dlp --compat-options no-youtube-unavailable-videos \
+    -f "bestaudio[ext=m4a]/bestaudio" "$url" \
+    -o "$folder/%(title)s.%(ext)s"
+
+  notify-send "Download finished" "$(yt-dlp --get-title "$url")"
+fi
+
