@@ -1,0 +1,25 @@
+Games For no vulkan support and low GPU 
+
+Native Linux Games (OpenGL-friendly / Lightweight)
+- Slay the Spire - Turn-based deckbuilder, native and light on GPU.
+- FTL: Faster Than Light - Space roguelike, very low GPU usage.
+- Stardew Valley - Farming sim, retro graphics, runs very well.
+- Undertale - Retro RPG, extremely lightweight.
+- Celeste - Pixel-art platformer, GPU-friendly.
+- The Binding of Isaac: Rebirth - Top-down shooter with pixel graphics.
+- Don't Starve - Stylized 2D survival game, runs smoothly.
+Windows Games via Wine/Proton
+- Half-Life 2 - Uses Source engine, OpenGL/DirectX 9 compatible.
+- Portal 1 and 2 - Great puzzle platformers, low GPU needs.
+- Minecraft (Vanilla) - Avoid heavy shader mods.
+- Terraria - Lightweight 2D sandbox game.
+- Hotline Miami - Fast-paced pixel shooter.
+Classic / Emulated Games
+- Doom, Quake, Quake II - Classic shooters with OpenGL ports.
+- Final Fantasy (old titles) - Via ports or emulators.
+- Retro console games - NES, SNES, Genesis via emulators.
+Performance Tips for Low-End Systems
+- Use windowed or borderless window mode.
+- Lower game resolution and disable visual effects.
+- Use a lightweight desktop environment (like XFCE).
+- Avoid Vulkan-only games and shader-heavy mods.

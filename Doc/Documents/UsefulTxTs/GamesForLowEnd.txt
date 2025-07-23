@@ -1,0 +1,88 @@
+🎮 Games That Run Well Without Vulkan (For Low-End Systems)
+
+✅ Native Linux Games (OpenGL-friendly / Lightweight)
+- Slay the Spire – Deckbuilder roguelike
+- FTL: Faster Than Light – Space combat & survival
+- Stardew Valley – Relaxing farming & life sim
+- Undertale – Unique retro RPG with heart
+- Celeste – Precision platformer with a deep story
+- The Binding of Isaac: Rebirth – Roguelike shooter
+- Don’t Starve – Survive in a hand-drawn nightmare
+- SuperTux – Mario-style open-source platformer
+- SuperTuxKart – Kart racing fun
+- Xonotic – Fast-paced arena FPS
+- OpenTTD – Transport empire simulator
+- 0 A.D. – RTS set in ancient times
+- Battle for Wesnoth – Turn-based fantasy strategy
+- Pingus – Lemmings clone with penguins
+- Minetest – Minecraft-style voxel sandbox
+- Tux Racer – Classic snow racing game
+- FreeCiv – Civilization-style strategy game
+- Red Eclipse – Arena FPS based on Cube engine
+- Warzone 2100 – Post-apocalyptic RTS
+- RE:Alistair++ – Free anime-style visual novel
+
+🍷 Windows Games via Wine (No Vulkan Needed)
+- Half-Life & Half-Life 2 – Classic Valve FPS
+- Portal 1 & 2 – Physics puzzle platformers
+- Terraria – 2D sandbox survival
+- Hotline Miami – Stylish fast-paced action
+- GTA: Vice City & San Andreas – Classic open-world chaos
+- Age of Empires II (HD or Classic) – RTS legend
+- Command & Conquer: Red Alert 2 / Generals – RTS classics
+- Diablo II – Legendary action RPG
+- Max Payne – Noir-style third-person shooter
+- Plants vs. Zombies – Casual tower defense
+- Torchlight – Action RPG dungeon crawler
+- Braid – Time-bending puzzle platformer
+- LIMBO – Monochrome horror platformer
+- Mark of the Ninja – Stealth-action side-scroller
+- Mirror’s Edge – First-person parkour (on low settings)
+- Star Wars: KOTOR – RPG masterpiece
+- FEZ – Puzzle platformer with a twist
+- Spelunky – Procedural platforming adventure
+- World of Goo – Puzzle construction game
+- Papers, Please – Dystopian border sim
+- Dust: An Elysian Tail – Action RPG (runs decently)
+- VVVVVV – Retro gravity-flipping platformer
+
+🕹️ Classic & Emulated Games (DOSBox / ScummVM / RetroArch)
+- Doom / Doom II / Quake / Quake II
+- StarCraft (Brood War)
+- Warcraft II / III
+- Heroes of Might and Magic III
+- RollerCoaster Tycoon 1 & 2
+- Jazz Jackrabbit 2
+- Duke Nukem 3D
+- Commander Keen series
+- Worms Armageddon
+- SimCity 2000 / 3000
+- Theme Hospital
+- Tyrian 2000 – Vertical shooter
+- Monkey Island series – Point-and-click comedy
+- Legend of Kyrandia – DOS fantasy adventure
+- Tomb Raider I-III
+- Need for Speed II SE
+- Descent 1 & 2 – Retro 6DOF shooters
+- Shadow Warrior – Build engine FPS
+
+🎭 Honorable Mentions (Free / Indie / Weird / Great)
+- Noitu Love 2 – 2D action brawler
+- Off – Surreal RPG
+- OneShot – Emotional story-based adventure
+- Yume Nikki – Dream explorer game
+- Hyper Light Drifter – 2D action RPG (lower res)
+- Momodora: Reverie Under the Moonlight – Beautiful pixel action
+- A Short Hike – Cozy exploration game
+- Cave Story – Classic free Metroidvania
+- Oxenfree – Voice-acted mystery adventure
+
+⚙️ Performance Tips for Low-End Systems
+- Use XFCE or LXQt desktop environments
+- Disable desktop composition (in xfwm4-tweaks)
+- Lower screen resolution (e.g., 1024x768)
+- Use Wine Staging 10.8 for better compatibility
+- Enable gamemoderun if installed
+- Prefer OpenGL and DX9-based games
+- Avoid Vulkan / DX11+ unless tested and very optimized
+
