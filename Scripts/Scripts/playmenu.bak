@@ -9,38 +9,70 @@ read -rp "Search YouTube: " query
 [ -z "$query" ] && echo "No input." && exit
 
 # 3. Get search results into a variable first to avoid broken pipe
-results=$(yt-dlp "ytsearch10:$query" --flat-playlist --print "%(title)s | https://www.youtube.com/watch?v=%(id)s")
+results=$(yt-dlp "ytsearch50:$query" --flat-playlist --print "%(title)s | https://www.youtube.com/watch?v=%(id)s")
 
 [ -z "$results" ] && echo "No results found." && exit
 
 # 4. Pass results to fzf
-selection=$(printf "%s\n" "$results" | fzf --prompt="Pick a video: " --height=20)
+selection=$(printf "%s\n" "$results" | fzf --multi --prompt="Pick a video: " --height=20)
 [ -z "$selection" ] && echo "Nothing selected." && exit
 
 # 5. Extract URL
 url=$(echo "$selection" | sed -E 's/.* \| //')
 
-# Copy URL to clipboard
-if command -v xclip &>/dev/null; then
-  echo "$url" | xclip -selection clipboard
-  notify-send "YouTube URL copied to clipboard" "$url"
-fi
 
 # 6. Do the thing
 # Play BLOCK
 if [ "$mode" = "Play" ]; then
-  # Get direct stream URL
-  stream_url=$(yt-dlp -f "bestaudio[ext=m4a]/bestaudio" -g "$url")
-  [ -z "$stream_url" ] && echo "Failed to get stream URL." && exit
+  urls=()
+  titles=()
 
-  # Get video title
-  title=$(yt-dlp --get-title "$url")
+  # Temp dir for background results
+  tmpdir=$(mktemp -d)
 
-  # Always loop since it's a single track
-  loop_opt="--loop=inf"
+  # Index
+  i=0
 
-  # Launch MPV with GUI, title, and loop ON by default
-  nohup mpv --ytdl=no --force-window=immediate $loop_opt --title="$title" "$stream_url" > /dev/null 2>&1 &
+  # Start fetching in parallel
+  while IFS= read -r line; do
+    video_url=$(echo "$line" | sed -E 's/.* \| //')
+    (
+      read -r stream_url video_title <<< "$(yt-dlp -f "bestaudio[ext=m4a]/bestaudio" --print "%(url)s %(title)s" "$video_url")"
+      echo "$stream_url" > "$tmpdir/stream_$i"
+      echo "$video_title" > "$tmpdir/title_$i"
+    ) &
+    ((i++))
+  done <<< "$selection"
+
+  # Wait for all background jobs to finish
+  wait
+
+  # Collect results
+  for ((j=0; j<i; j++)); do
+    urls+=("$(<"$tmpdir/stream_$j")")
+    titles+=("$(<"$tmpdir/title_$j")")
+  done
+
+  # Clean up temp files
+  rm -rf "$tmpdir"
+
+  [ ${#urls[@]} -eq 0 ] && echo "No videos selected." && exit
+
+  # Set title to first video
+  title="${titles[0]}"
+
+  # If just 1 video, loop it
+  if [ ${#urls[@]} -eq 1 ]; then
+    loop_opt="--loop=inf"
+  else
+    loop_opt=""
+  fi
+
+  # Launch MPV
+  nohup mpv --ytdl=no --force-window=immediate \
+    --cache-secs=1 --demuxer-max-back-bytes=500000 \
+    --title="$title" $loop_opt "${urls[@]}" > /dev/null 2>&1 &
+
 # Download Block 
 elif [ "$mode" = "Download" ]; then
   read -rp "Save to folder (default: ~/Music/yt-dl): " folder

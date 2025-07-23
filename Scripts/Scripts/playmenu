@@ -1,57 +1,123 @@
 #!/bin/bash
 
-# 1. Choose mode
-mode=$(printf "Play\nDownload" | fzf --prompt="Mode: " --height=10 --border)
+# This script allows you to search YouTube and either play the audio directly
+# with MPV or download it using yt-dlp. It uses fzf for interactive menus.
+
+# --- Configuration ---
+# You can change the default download folder here
+DEFAULT_DOWNLOAD_FOLDER="$HOME/Music/yt-dl"
+
+# --- Main Script ---
+
+# 1. Choose mode: Play or Download
+mode=$(printf "Play\nDownload" | fzf --prompt="Select Mode: " --height="3" --layout="reverse" --border)
+# Exit if fzf was cancelled (e.g., by pressing Esc)
 [ -z "$mode" ] && echo "Cancelled." && exit
 
-# 2. Ask what to search
+# 2. Get the search query from the user
 read -rp "Search YouTube: " query
-[ -z "$query" ] && echo "No input." && exit
+# Exit if the user provides no input
+[ -z "$query" ] && echo "No search query entered." && exit
 
-# 3. Get search results into a variable first to avoid broken pipe
-results=$(yt-dlp "ytsearch10:$query" --flat-playlist --print "%(title)s | https://www.youtube.com/watch?v=%(id)s")
+# 3. Search YouTube using yt-dlp and format the output for fzf
+# We search for 50 results and print the title and URL, separated by a pipe.
+# Storing results in a variable prevents a "broken pipe" error if fzf is cancelled.
+search_results=$(yt-dlp "ytsearch50:$query" --flat-playlist --print "%(title)s | https://www.youtube.com/watch?v=%(id)s")
 
-[ -z "$results" ] && echo "No results found." && exit
+# Exit if yt-dlp returned no results
+[ -z "$search_results" ] && echo "No results found for '$query'." && exit
 
-# 4. Pass results to fzf
-selection=$(printf "%s\n" "$results" | fzf --prompt="Pick a video: " --height=20)
-[ -z "$selection" ] && echo "Nothing selected." && exit
+# 4. Use fzf to let the user select one or more videos
+# The --multi flag allows for multiple selections (using Tab or Shift-Tab)
+selection=$(printf "%s\n" "$search_results" | fzf --multi --prompt="Select Video(s): " --height="40%" --layout="reverse" --border)
+# Exit if nothing was selected
+[ -z "$selection" ] && echo "No videos selected." && exit
 
-# 5. Extract URL
-url=$(echo "$selection" | sed -E 's/.* \| //')
+# 5. Process the selection from fzf into separate URL and title arrays
+# This parsing is more robust to handle titles that contain pipe characters.
+urls=()
+titles=()
+while IFS= read -r line; do
+    # Extract the URL by greedily matching everything up to the last pipe and space
+    urls+=("$(echo "$line" | sed -E 's/.* \| (https?:\/\/[^ ]+)/\1/')")
+    # Extract the title by removing the URL part from the end of the line
+    titles+=("$(echo "$line" | sed -E 's/ \| https?:.*//')")
+done <<< "$selection"
 
-# Copy URL to clipboard
-if command -v xclip &>/dev/null; then
-  echo "$url" | xclip -selection clipboard
-  notify-send "YouTube URL copied to clipboard" "$url"
-fi
+# Double-check that we have URLs to process
+[ ${#urls[@]} -eq 0 ] && echo "Selection processing failed." && exit
 
-# 6. Do the thing
-# Play BLOCK
+# 6. Perform the chosen action: Play or Download
 if [ "$mode" = "Play" ]; then
-  # Get direct stream URL
-  stream_url=$(yt-dlp -f "bestaudio[ext=m4a]/bestaudio" -g "$url")
-  [ -z "$stream_url" ] && echo "Failed to get stream URL." && exit
+    ### PLAY BLOCK ###
+    echo "Fetching stream URLs..."
+    stream_urls=()
+    pids=()
+    tmpdir=$(mktemp -d) # Create a secure temporary directory
 
-  # Get video title
-  title=$(yt-dlp --get-title "$url")
+    # Fetch stream URLs in parallel to speed things up
+    for i in "${!urls[@]}"; do
+        (
+            # Get the direct audio stream URL from yt-dlp
+            stream_url=$(yt-dlp -f "bestaudio[ext=m4a]/bestaudio" --get-url "${urls[i]}")
+            if [ -z "$stream_url" ]; then
+	     echo "Error: Failed to fetch stream URL for ${titles[i]}" >&2 # Redirect to stderr
+             echo "" > "$tmpdir/$i" # Write an empty string to avoid issues later
+    	 else  
+	# Save the URL to a file named after its index to maintain playlist order
+	echo "$stream_url" > "$tmpdir/$i"
+	fi
+	) &
+        pids+=($!) # Store the process ID of the background job
+    done
 
-  # Always loop since it's a single track
-  loop_opt="--loop=inf"
+    # Wait for all parallel jobs to complete
+    for pid in "${pids[@]}"; do
+        wait "$pid"
+    done
 
-  # Launch MPV with GUI, title, and loop ON by default
-  nohup mpv --ytdl=no --force-window=immediate --cache-secs=1 --demuxer-max-back-bytes=500000 --title="$title" $loop_opt "$stream_url" > /dev/null 2>&1 &
+    # Collect the results from the temp files in the correct order
+    for i in "${!urls[@]}"; do
+        stream_urls+=("$(<"$tmpdir/$i")")
+    done
 
-  # Download Block 
+    # Clean up the temporary directory
+    rm -rf "$tmpdir"
+
+    # Set the MPV window title to the first video's title
+    title="${titles[0]}"
+    [ ${#titles[@]} -gt 1 ] && title="$title (and $((${#titles[@]} - 1)) more)"
+
+    # Loop a single video infinitely
+    loop_opt=""
+    [ ${#urls[@]} -eq 1 ] && loop_opt="--loop=inf"
+
+    echo "Starting MPV..."
+    # Launch MPV with the direct stream URLs
+    nohup mpv --ytdl=no --force-window=immediate \
+	--demuxer-max-back-bytes=500000 \
+      --title="$title" $loop_opt "${stream_urls[@]}" > /dev/null 2>&1 &
+
 elif [ "$mode" = "Download" ]; then
-  read -rp "Save to folder (default: ~/Music/yt-dl): " folder
-  folder="${folder:-$HOME/Music/yt-dl}"
-  mkdir -p "$folder"
+    ### DOWNLOAD BLOCK ###
+    read -rp "Save to folder (default: $DEFAULT_DOWNLOAD_FOLDER): " folder
+    folder="${folder:-$DEFAULT_DOWNLOAD_FOLDER}"
+    mkdir -p "$folder"
 
-  yt-dlp --compat-options no-youtube-unavailable-videos \
-    -f "bestaudio[ext=m4a]/bestaudio" "$url" \
-    -o "$folder/%(title)s.%(ext)s"
+    echo "Starting download of ${#urls[@]} video(s)..."
+    # Pass the array of URLs to yt-dlp. The "${urls[@]}" syntax ensures
+    # each URL is passed as a separate argument.
+    yt-dlp --compat-options no-youtube-unavailable-videos \
+      -f "bestaudio[ext=m4a]/bestaudio" \
+      -o "$folder/%(title)s.%(ext)s" \
+      -- "${urls[@]}"
 
-  notify-send "Download finished" "$(yt-dlp --get-title "$url")"
+    # Send a desktop notification summarizing the download
+    count=${#titles[@]}
+    summary="Finished downloading $count item(s) to '$folder'."
+    [ "$count" -eq 1 ] && summary="Downloaded \"${titles[0]}\" to '$folder'."
+    
+    notify-send "YouTube Download Complete" "$summary"
+    echo "Download complete."
 fi
 
