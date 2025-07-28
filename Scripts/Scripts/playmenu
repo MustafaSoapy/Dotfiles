@@ -60,6 +60,7 @@ if [ "$mode" = "Play" ]; then
         (
             # Get the direct audio stream URL from yt-dlp
             stream_url=$(yt-dlp -f "bestaudio[ext=m4a]/bestaudio" --get-url "${urls[i]}")
+
             if [ -z "$stream_url" ]; then
 	     echo "Error: Failed to fetch stream URL for ${titles[i]}" >&2 # Redirect to stderr
              echo "" > "$tmpdir/$i" # Write an empty string to avoid issues later
