@@ -5,7 +5,7 @@ import requests
 import vdf
 from pathlib import Path
 
-API_KEY = "c740e6a720de0991ce43d97e0482c745
+API_KEY = "c740e6a720de0991ce43d97e0482c745"
 
 STEAM_USERDATA = Path.home() / ".local/share/Steam/userdata"
 HEADERS = {"Authorization": f"Bearer {API_KEY}"}
