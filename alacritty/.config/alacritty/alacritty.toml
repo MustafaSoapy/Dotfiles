@@ -36,5 +36,9 @@ import = ["/home/sofi/Dotfiles/alacritty/.config/alacritty/dracula.toml"]
 program = "/bin/zsh"
 args = ["--login"]  # Ensures Zsh loads startup files (.zshrc, etc.)
 
+[[keyboard.bindings]]
+key = "Backspace"
+mods = "Control"
+chars = "\u0017"
 
 [terminal]
