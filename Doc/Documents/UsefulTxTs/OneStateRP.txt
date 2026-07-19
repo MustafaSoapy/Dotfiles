@@ -1,0 +1,7 @@
+here is everything i did nd suddenly the 60 frames option is there , idk which one was it ?
+
+❯ sudo waydroid shell wm size 1280x720
+❯ sudo waydroid shell wm density 240
+❯ waydroid prop set ro.surface_flinger.max_frame_rate 60
+❯ waydroid prop set debug.overlayui.enable 1
+❯ sudo cpupower frequency-set -g performance
